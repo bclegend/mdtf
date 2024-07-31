@@ -141,3 +141,24 @@ plt.legend()
 
 plt.tight_layout()
 plt.show()
+
+from PIL import Image
+# Predict function
+def predict_image(image_path, model, transform, class_names):
+    model.eval()
+    image = Image.open(image_path).convert('RGB')
+    image = transform(image).unsqueeze(0).to(device)
+
+    with torch.no_grad():
+        outputs = model(image)
+        _, predicted = torch.max(outputs, 1)
+        predicted_class = class_names[predicted.item()]
+
+    return predicted_class
+
+# Example usage: predict an image
+import os
+for im in os.listdir('./test/'):
+    image_path = './test/' + im
+    predicted_class = predict_image(image_path, model, transform, dataset.classes)
+    print(f'Predicted class: {predicted_class}')
